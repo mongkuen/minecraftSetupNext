@@ -1,0 +1,18 @@
+{
+    "format_version": 1,
+    "header": {
+        "description": "\u00A73This is a Beta Edition!\n\u00A78By Jakob.zero",
+        "name": "\u00A7l\u00A7aBlock\u00A7cPixel \u00A78Resource Pack",
+        "uuid": "1e42cf1e-987e-11e9-a2a3-2a2ae2dbcce4",
+        "version": [0, 0, 2],
+        "min_engine_version": [1, 9, 0]
+    },
+    "modules": [
+        {
+            "description": "BlockPixel Resourcepack",
+            "type": "resources",
+            "uuid": "256e9caf-d7f9-42d3-ac8b-f3550c970212",
+            "version": [0, 0, 1]
+        }
+    ]
+}

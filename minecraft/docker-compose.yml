@@ -1,0 +1,16 @@
+version: "3.2"
+
+services:
+  minecraft:
+    build: .
+    ports:
+      - "19132:19132/udp"
+      - "19133:19133/udp"
+    restart: unless-stopped
+    # allow attaching to container
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./config:/data/config
+      - ./worlds:/data/worlds
+      - ./development_resource_packs:/data/development_resource_packs
