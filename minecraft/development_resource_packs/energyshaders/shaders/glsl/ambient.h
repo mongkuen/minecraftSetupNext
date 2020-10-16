@@ -142,15 +142,15 @@ vec4 Ambient(vec4 diffuse, vec3 screenPosition, float shadow, float light, float
 
   }
 
-  #ifdef VIGNETTE
-    vec4 vignetteColor = mix(VIGNETTE_COLOR_FACT_DAY, VIGNETTE_COLOR_FACT_NIGHT, nightDay);
-    vignetteColor = mix(vignetteColor, VIGNETTE_COLOR_FACT_CAVE, min(1.0, darkness*1.2));
-    vignetteColor *= diffuse;
+  // #ifdef VIGNETTE
+  //   vec4 vignetteColor = mix(VIGNETTE_COLOR_FACT_DAY, VIGNETTE_COLOR_FACT_NIGHT, nightDay);
+  //   vignetteColor = mix(vignetteColor, VIGNETTE_COLOR_FACT_CAVE, min(1.0, darkness*1.2));
+  //   vignetteColor *= diffuse;
 
-    float range = length(screenPosition.xy / (screenPosition.z + 0.1)) * 0.85;
+  //   float range = length(screenPosition.xy / (screenPosition.z + 0.1)) * 0.85;
 
-    diffuse = mix(diffuse, vignetteColor, clamp((range - 0.5) * 2.0, 0.0, 1.0));
-  #endif
+  //   diffuse = mix(diffuse, vignetteColor, clamp((range - 0.5) * 2.0, 0.0, 1.0));
+  // #endif
 
   return diffuse;
 }
