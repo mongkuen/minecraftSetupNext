@@ -139,10 +139,10 @@ float MakeDepthLinear(float z, float n, float f, bool scaleZ)
 			#define CAVE_MAX_DARKNESS 0.3
 			//#define MORE_REALISTIC_CAVE
 
-			// #define VIGNETTE
-			// #define VIGNETTE_COLOR_FACT_DAY vec4(0.56, 0.56, 0.56, 1.0)
-			// #define VIGNETTE_COLOR_FACT_NIGHT vec4(0.46, 0.46, 0.46, 1.0)
-			// #define VIGNETTE_COLOR_FACT_CAVE vec4(0.26, 0.26, 0.39, 1.0)
+			#define VIGNETTE
+			#define VIGNETTE_COLOR_FACT_DAY vec4(0.56, 0.56, 0.56, 1.0)
+			#define VIGNETTE_COLOR_FACT_NIGHT vec4(0.46, 0.46, 0.46, 1.0)
+			#define VIGNETTE_COLOR_FACT_CAVE vec4(0.26, 0.26, 0.39, 1.0)
 
 			#define WATER_COLOR_IN_SHADOW_PER_CENT vec4(0.55, 0.55, 0.65, 0.75)
 			#define WATER_COLOR_IN_CAVES vec4(0.05, 0.07, 0.25, 0.75)
@@ -435,15 +435,15 @@ float MakeDepthLinear(float z, float n, float f, bool scaleZ)
 
 				}
 
-				// #ifdef VIGNETTE
-				// 	vec4 vignetteColor = mix(VIGNETTE_COLOR_FACT_DAY, VIGNETTE_COLOR_FACT_NIGHT, nightDay);
-				// 	vignetteColor = mix(vignetteColor, VIGNETTE_COLOR_FACT_CAVE, min(1.0, darkness*1.2));
-				// 	vignetteColor *= diffuse;
+				#ifdef VIGNETTE
+					vec4 vignetteColor = mix(VIGNETTE_COLOR_FACT_DAY, VIGNETTE_COLOR_FACT_NIGHT, nightDay);
+					vignetteColor = mix(vignetteColor, VIGNETTE_COLOR_FACT_CAVE, min(1.0, darkness*1.2));
+					vignetteColor *= diffuse;
 
-				// 	float range = length(screenPosition.xy / (screenPosition.z + 0.1)) * 0.85;
+					float range = length(screenPosition.xy / (screenPosition.z + 0.1)) * 0.85;
 
-				// 	diffuse = mix(diffuse, vignetteColor, clamp((range - 0.5) * 2.0, 0.0, 1.0));
-				// #endif
+					diffuse = mix(diffuse, vignetteColor, clamp((range - 0.5) * 2.0, 0.0, 1.0));
+				#endif
 
 				return diffuse;
 			}
