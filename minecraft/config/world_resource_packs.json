@@ -1,10 +1,6 @@
 [
   {
-    "pack_id": "39a0762c-bed8-11ea-b3de-0242ac130004",
-    "version": [3, 7, 3]
-  },
-  {
-    "pack_id": "1e42cf1e-987e-11e9-a2a3-2a2ae2dbcce4",
-    "version": [0, 0, 2]
+    "pack_id" : "3ee6f0d2-81a9-43c9-b9b6-8a5dfd881ed0",
+    "version" : [2, 4, 0]
   }
 ]

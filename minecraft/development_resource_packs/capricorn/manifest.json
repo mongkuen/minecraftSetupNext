@@ -1,0 +1,17 @@
+{
+   "format_version" : 1,
+   "header" : {
+      "description" : "v2.4.0 For MCBE v1.16.x\n§7Instagram: §4@scorpio_graphics \n§7Twitter: §b@Scorpiographic2",
+      "name" : "§f» §e§lCapricorn PE Shaders §1§l[2.4]",
+      "uuid" : "3ee6f0d2-81a9-43c9-b9b6-8a5dfd881ed0",
+      "version" : [ 2, 4, 0 ]
+   },
+   "modules" : [
+      {
+         "description" : "v2.4.0 For MCBE v1.16.x\n§7Instagram: §4@scorpio_graphics \n§7Twitter: §b@Scorpiographic2",
+         "type" : "resources",
+         "uuid" : "84408d5a-93ef-439b-bbbd-c0a5e8e33b17",
+         "version" : [ 2, 4, 0 ]
+      }
+   ]
+}

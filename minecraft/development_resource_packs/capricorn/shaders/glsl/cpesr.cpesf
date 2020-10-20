@@ -1,0 +1,194 @@
+// __multiversion__
+// This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
+
+/*
+ _______ _________ _______  _______  _
+(  ____ \\__   __/(  ___  )(  ____ )( )
+| (    \/   ) (   | (   ) || (    )|| |
+| (_____    | |   | |   | || (____)|| |
+(_____  )   | |   | |   | ||  _____)| |
+      ) |   | |   | |   | || (      (_)
+/\____) |   | |   | (___) || )       _
+\_______)   )_(   (_______)|/       (_)
+
+Do not modify this code until you have read the Read Me.txt contained in the root directory of this shaderpack!
+
+*/
+
+#include "fragmentVersionCentroid.h"
+
+#if __VERSION__ >= 300
+	#ifndef BYPASS_PIXEL_SHADER
+		#if defined(TEXEL_AA) && defined(TEXEL_AA_FEATURE)
+			_centroid in highp vec2 uv0;
+			_centroid in highp vec2 uv1;
+		#else
+			_centroid in vec2 uv0;
+			_centroid in vec2 uv1;
+		#endif
+	#endif
+#else
+	#ifndef BYPASS_PIXEL_SHADER
+		varying vec2 uv0;
+		varying vec2 uv1;
+	#endif
+#endif
+
+varying vec4 color;
+varying highp vec3 wpos;
+varying highp vec3 look;
+varying highp vec3 position;
+varying highp vec3 rainpos;
+
+
+#ifdef FOG
+varying vec4 fogColor;
+#endif
+
+#include "uniformShaderConstants.h"
+#include "util.h"
+#include "uniformPerFrameConstants.h"
+
+LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
+LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
+LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
+
+vec3 saturation(vec3 rgb, float adjustment)
+{
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    vec3 intensity = vec3(dot(rgb, W));
+    return min( mix(intensity, rgb, adjustment), vec3( 1.0, 1.0, 1.0 ));
+}
+
+float remap(float minval, float maxval, float curval ){
+     return ( curval - minval ) / ( maxval - minval );
+}
+
+vec3 U2TM(vec3 color)
+{
+	float gamma = 1.25;
+	float A = 1.25;
+	float B = 0.1;
+	float C = 0.6;
+	float D = 0.7;
+	float E = 0.02;
+	float F = 0.6;
+	float W = 11.2;
+	float exposure = 2.;
+	color *= exposure;
+	color = ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - E / F;
+	float white = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
+	color /= white;
+	color = pow(color, vec3(1. / gamma));
+	return color;
+}
+
+void main()
+{
+#ifdef BYPASS_PIXEL_SHADER
+	gl_FragColor = vec4(0, 0, 0, 0);
+	return;
+#else
+
+#if USE_TEXEL_AA
+	vec4 diffuse = texture2D_AA(TEXTURE_0, uv0);
+#else
+	vec4 diffuse = texture2D(TEXTURE_0, uv0);
+#endif
+
+#ifdef SEASONS_FAR
+	diffuse.a = 1.0;
+#endif
+
+#if USE_ALPHA_TEST
+	#ifdef ALPHA_TO_COVERAGE
+	#define ALPHA_THRESHOLD 0.05
+	#else
+	#define ALPHA_THRESHOLD 0.5
+	#endif
+	if(diffuse.a < ALPHA_THRESHOLD)
+		discard;
+#endif
+
+vec4 inColor = color;
+
+#if defined(BLEND)
+	diffuse.a *= inColor.a;
+#endif
+
+#if !defined(ALWAYS_LIT)
+vec2 uvl = uv1;
+uvl.x = mix(1.0,uvl.x,length(-wpos)/RENDER_DISTANCE *25.0);
+ vec4 Light=texture2D(TEXTURE_1,uvl);
+	diffuse *=Light;
+#endif
+
+#ifndef SEASONS
+	#if !USE_ALPHA_TEST && !defined(BLEND)
+		diffuse.a = inColor.a;
+	#endif
+
+	diffuse.rgb *= inColor.rgb;
+#else
+	vec2 uv = inColor.xy;
+	diffuse.rgb *= mix(vec3(1.0,1.0,1.0), texture2D( TEXTURE_2, uv).rgb*2.0, inColor.b);
+	diffuse.rgb *= inColor.aaa;
+	diffuse.a = 1.0;
+#endif
+
+vec3 torch = vec3( 255.0/255.0, 141.0/255.0, 11.0/255.0 );
+diffuse.rgb += torch * max( 0.0, uv1.x- 0.5 );
+
+float shadow = smoothstep(0.876,0.869,uv1.y);
+shadow *= (1.-uv1.x);
+float gelap = 0.7;
+shadow = mix(0.,gelap,shadow);
+diffuse.rgb = mix(diffuse.rgb,vec3(0),shadow);
+
+diffuse.rgb=U2TM(diffuse.rgb);
+
+float fog = clamp(length(-wpos)/ RENDER_DISTANCE*1.25,0.0,1.0);
+vec3 fog2 = mix(diffuse.rgb,FOG_COLOR.rgb, fog);
+diffuse.rgb = fog2;
+
+diffuse.rgb = saturation( diffuse.rgb, 2.0 );
+
+float side_block = length(color.rgb) / 3.;
+float side_shadow = mix( .8, 1., uv1.x );
+if(color.a == 0.) side_block = 1.;
+if(color.b + color.b > color.r + color.g) side_block = 1.;
+
+if( uv1.y < .87 ) {
+}else{
+if( side_block < .23 ) diffuse.rgb *= side_shadow;
+if( side_block < .228 ) diffuse.rgb *= side_shadow;
+if( side_block < .226 ) diffuse.rgb *= side_shadow;
+}
+
+if(FOG_CONTROL.x<.4&&FOG_CONTROL.x>.1){
+if (fract(rainpos.y)==0.0||fract(rainpos.y)==0.5){
+float drain = 1.0-pow(FOG_CONTROL.y,11.0);
+float erain = length(wpos.xyz)/RENDER_DISTANCE;
+diffuse.rgb +=clamp( erain*7.0,0.0,0.5)*drain;
+}
+}
+
+bool nether = (FOG_COLOR.r > FOG_COLOR.b	&& FOG_COLOR.r < 0.5 && FOG_COLOR.b < 0.2);
+
+if(nether == true){
+vec3 torch = vec3(1.0,0.2,0.05);
+diffuse.rgb += torch * max( 0.0, uv1.x- 0.5 );
+
+    float fog = clamp(length(-wpos)/ RENDER_DISTANCE*2.0,0.0,1.0);
+vec3 fog2 = mix(diffuse.rgb,FOG_COLOR.rgb, fog);
+diffuse.rgb = fog2;
+}
+
+#ifdef FOG
+	diffuse.rgb = mix( diffuse.rgb, fogColor.rgb, fogColor.a );
+#endif
+
+	gl_FragColor = diffuse;
+
+#endif // BYPASS_PIXEL_SHADER
+}
