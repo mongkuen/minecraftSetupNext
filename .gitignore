@@ -15,8 +15,6 @@
 # production
 /build
 /minecraft/worlds
-/minecraft/worlds*
-/minecraft/worlds/*
 /backups
 
 # misc
