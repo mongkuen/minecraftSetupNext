@@ -7,3 +7,4 @@ https://github.com/Element-0/ElementZero
 `docker-compose up -d` in `/minecraft` to start minecraft server
 
 `cp config/world_resource_packs.json worlds/bedrockLevel/world_resource_packs.json` to copy resource packs into generated world, and restart server
+Update `ARG bedrockVersion=1.16.201.02` in Dockerfile to update bedrocker server editions
