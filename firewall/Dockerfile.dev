@@ -4,4 +4,4 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY package.json ./
-CMD ["yarn", "nodemon", "src/index.js"]
+CMD ["yarn", "nodemon", "/app/src/index.js"]

@@ -38,12 +38,15 @@ app.post('/register', (req, res) => {
       }
     })
       .then((doRes) => {
+        console.log(`${new Date()} - ADD IP SUCCESS => ${req.clientIp}`)
         res.redirect('/success')
       })
       .catch((err) => {
+        console.log(`${new Date()} - ADD IP FAILURE => ${req.clientIp}`)
         res.redirect('/failure')
       })
   } else {
+    console.log(`${new Date()} - PASSPHRASE FAILURE => ${req.body.password}`)
     res.redirect('/failure')
   }
 })
