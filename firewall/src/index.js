@@ -2,7 +2,7 @@ const express = require('express')
 const axios = require('axios')
 const requestIp = require('request-ip')
 
-const PORT = 8080
+const PORT = 80
 const HOST = '0.0.0.0'
 
 const app = express()
@@ -10,11 +10,11 @@ app.use(express.urlencoded({ extended: true }))
 app.use(requestIp.mw())
 app.set('trust proxy', true)
 
-app.get('/minecraft', (req, res) => {
-  res.send(`<form action="/minecraft" method="POST"><label for="password">Register: </label><input type="password" name="password" id="password"/><button type="submit">Submit</button></form>`)
+app.get('/', (req, res) => {
+  res.send(`<form action="/register" method="POST"><label for="password">Register: </label><input type="password" name="password" id="password"/><button type="submit">Submit</button></form>`)
 })
 
-app.post('/minecraft', (req, res) => {
+app.post('/register', (req, res) => {
   if (req.body.password === process.env.PASSWORD) {
     axios({
       method: 'post',
@@ -38,21 +38,21 @@ app.post('/minecraft', (req, res) => {
       }
     })
       .then((doRes) => {
-        res.redirect('/minecraft/success')
+        res.redirect('/success')
       })
       .catch((err) => {
-        res.redirect('/minecraft/failure')
+        res.redirect('/failure')
       })
   } else {
-    res.redirect('/minecraft/failure')
+    res.redirect('/failure')
   }
 })
 
-app.get('/minecraft/success', (req, res) => {
+app.get('/success', (req, res) => {
   res.send('Done!')
 })
 
-app.get('/minecraft/failure', (req, res) => {
+app.get('/failure', (req, res) => {
   res.send('<button onclick="history.back()">Retry</button>')
 })
 
